@@ -70,9 +70,9 @@ TEST(FILESYSTEM, WRITE_READ_WITH_OFFSET) {
     filesystem.write("test3.bin", vec, 0);
 
     auto vec1
-        = filesystem.read<std::vector<trivial_struct>>("test3.bin", vec_size);
+        = filesystem.read<std::vector<trivial_struct>>("test3.bin", 0);
     auto vec2
-        = filesystem.read<std::vector<trivial_struct>>("test2.bin", vec_size);
+        = filesystem.read<std::vector<trivial_struct>>("test3.bin", vec_size);
 
     check_data_integrity(vec1);
     check_data_integrity(vec2);
