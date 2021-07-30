@@ -36,7 +36,7 @@ namespace fs {
         return os;
     };
 
-    template <serializable T, typename A, typename = std::enable_if_t<!std::trivially_copyable_v<T>>>
+    template <serializable T, typename A, typename = std::enable_if_t<!std::is_trivially_copyable_v<T>>>
     std::ostream& operator<<(std::ostream& os, std::vector<T, A>& obj) {
         details::write_size(os, obj);
         for (size_t i = 0; i < obj.size(); i++) {
@@ -55,7 +55,7 @@ namespace fs {
         return is;
     };
 
-    template <serializable T, typename A, typename = std::enable_if_t<!std::trivially_copyable_v<T>>>
+    template <serializable T, typename A, typename = std::enable_if_t<!std::is_trivially_copyable_v<T>>>
     std::istream& operator>>(std::istream& is, std::vector<T, A>& obj) {
         details::read_size(is, obj);
         if (obj.size() != 0) {
