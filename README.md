@@ -1,7 +1,7 @@
 [![Windows](https://github.com/FrancoisSestier/filesystem/actions/workflows/windows.yml/badge.svg)](https://github.com/FrancoisSestier/filesystem/actions/workflows/windows.yml) [![Ubuntu](https://github.com/FrancoisSestier/filesystem/actions/workflows/ubuntu.yml/badge.svg)](https://github.com/FrancoisSestier/filesystem/actions/workflows/ubuntu.yml) [![codecov](https://codecov.io/gh/FrancoisSestier/filesystem/branch/master/graph/badge.svg?token=ZPDP1TAO3Z)](https://codecov.io/gh/FrancoisSestier/filesystem) [![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)](http://unlicense.org/)
 
 ## filesystem
-Open Source header only binary serializer writen on top of standard cpp library
+c++20 Open Source header only binary serializer writen on top of standard cpp library
 
 ## Goal
 serialize vector, arrays, tuple fast, easily, and possibly asynchronously
