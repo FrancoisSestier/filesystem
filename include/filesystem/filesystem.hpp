@@ -10,25 +10,6 @@
 #include <mutex>
 namespace fs {
 
-    namespace internal {
-
-        inline static std::mutex mutex;
-
-        template <typename T>
-        inline void write_(const std::string& filepath, T&& data,
-                           size_t offset = 0) {
-            const std::lock_guard<std::mutex> lock(internal::mutex);
-            write<T>(filepath, data, offset);
-        }
-
-        template <typename T>
-        inline T read_(const std::string& filepath, size_t offset = 0) {
-            const std::lock_guard<std::mutex> lock(internal::mutex);
-            return read<T>(filepath, offset);
-        }
-
-    }  // namespace internal
-
     template <typename T>
     inline void read(const std::string& filepath, T& data, size_t offset = 0) {
         std::ifstream ifs(filepath, std::ios_base::binary | std::ios_base::out
@@ -76,7 +57,7 @@ namespace fs {
 
         if (std::filesystem::exists(f_path)) {
             std::ifstream ifs(filepath, std::ios_base::binary
-                            
+
                                             | std::ios_base::in);
             size_t size = std::filesystem::file_size(f_path);
             str.resize(size, '\0');
@@ -97,6 +78,25 @@ namespace fs {
         ofs.write(&data[0], data.length());
         ofs.close();
     }
+
+    namespace internal {
+
+        inline static std::mutex mutex;
+
+        template <typename T>
+        inline void write_(const std::string& filepath, T&& data,
+                           size_t offset = 0) {
+            const std::lock_guard<std::mutex> lock(internal::mutex);
+            write<T>(filepath, data, offset);
+        }
+
+        template <typename T>
+        inline T read_(const std::string& filepath, size_t offset = 0) {
+            const std::lock_guard<std::mutex> lock(internal::mutex);
+            return read<T>(filepath, offset);
+        }
+
+    }  // namespace internal
 
     template <typename T>
     auto read_async(const std::string& filepath, size_t offset = 0) {
