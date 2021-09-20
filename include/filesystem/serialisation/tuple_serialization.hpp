@@ -9,14 +9,14 @@
 namespace fs {
 
     template <typename... Ts>
-    std::ostream& operator<<(std::ostream& os, std::tuple<Ts...>& tuple) {
+    inline std::ostream& operator<<(std::ostream& os, std::tuple<Ts...>& tuple) {
         std::apply([&](Ts&... tupleArgs) { ((os << tupleArgs), ...); }, tuple);
 
         return os;
     };
 
     template <typename... Ts>
-    std::istream& operator>>(std::istream& is, std::tuple<Ts...>& tuple) {
+    inline std::istream& operator>>(std::istream& is, std::tuple<Ts...>& tuple) {
         std::apply([&](Ts&... tupleArgs) { ((is >> tupleArgs), ...); }, tuple);
         return is;
     };

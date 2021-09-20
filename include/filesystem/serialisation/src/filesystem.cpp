@@ -1,4 +1,5 @@
 #pragma once
+#include <filesystem/filesystem.hpp>
 #include <filesystem/serialisation/array_serialization.hpp>
 #include <filesystem/serialisation/trivially_copyable.hpp>
 #include <filesystem/serialisation/tuple_serialization.hpp>
@@ -12,11 +13,10 @@ namespace fs {
 
     namespace internal {
 
-        inline static std::mutex mutex;
+        inline static mutable std::mutex mutex;
 
         template <typename T>
-        inline void write_(const std::string& filepath, T&& data,
-                           size_t offset = 0) {
+        inline void write_(const std::string& filepath, T&& data, size_t offset = 0) {
             const std::lock_guard<std::mutex> lock(internal::mutex);
             write<T>(filepath, data, offset);
         }
@@ -28,8 +28,6 @@ namespace fs {
         }
 
     }  // namespace internal
-
-
 
     template <typename T>
     void read(const std::string& filepath, T& data, size_t offset = 0) {
@@ -71,45 +69,16 @@ namespace fs {
         }
     }
 
-    template <>
-    std::string read<std::string>(const std::string& filepath, size_t offset) {
-        std::ifstream ifs(filepath, std::ios_base::binary | std::ios_base::ate
-                                        | std::ios_base::in);
-        ifs.seekg(0, std::ios::end);
-        size_t size = ifs.tellg();
-        std::string str;
-        str.resize(size, '\0');
-        ifs.read(str.data(), size);
-        ifs.close();
-        return str;
-    }
-
-    template <>
-    void write<std::string>(const std::string& filepath, std::string& data, size_t offset) {
-        std::filesystem::path f_path{filepath};
-        std::ofstream ofs;
-
-        if (!std::filesystem::exists(f_path)) {
-            ofs.open(filepath.c_str(), std::ios_base::out);
-            ofs.close();
-        }
-
-        ofs.open(filepath.c_str(),
-                 std::fstream::out | std::fstream::in | std::fstream::binary);
-
-        ofs.write(data.data(), data.size() * sizeof(char));
-    }
-
     template <typename T>
     auto read_async(const std::string& filepath, size_t offset = 0) {
-        return std::async(std::launch::async, &internal::read_<T>, filepath,
-                          offset);
+        return std::async(std::launch::async, &internal::read_<T>, this,
+                          filepath, offset);
     }
 
     template <typename T>
     auto write_async(const std::string& filepath, T&& data, size_t offset = 0) {
-        return std::async(std::launch::async, &internal::write_<T>, filepath,
-                          std::move(data), offset);
+        return std::async(std::launch::async, &internal::write_<T>, this,
+                          filepath, std::move(data), offset);
     }
 
 }  // namespace fs

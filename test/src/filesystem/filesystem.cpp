@@ -1,4 +1,3 @@
-#pragma once
 #include <gtest/gtest.h>
 
 #include <filesystem/filesystem.hpp>
@@ -28,68 +27,74 @@ void check_data_integrity(std::vector<trivial_struct> &vec) {
 }
 
 TEST(FILESYSTEM, WRITE_READ1) {
-    fs::filesystem filesystem;
 
     {
         std::vector<trivial_struct> vec
             = {{1, 'a', .1f}, {2, 'b', .2f}, {3, 'c', .3f}};
 
-        filesystem.write("test2.bin", vec);
+        fs::write("test2.bin", vec);
     }
 
-    auto vec = filesystem.read<std::vector<trivial_struct>>("test2.bin");
+    auto vec = fs::read<std::vector<trivial_struct>>("test2.bin");
 
     check_data_integrity(vec);
 }
 
 TEST(FILESYSTEM, WRITE_READ2) {
-    fs::filesystem filesystem;
 
     std::vector<trivial_struct> vec
         = {{1, 'a', .1f}, {2, 'b', .2f}, {3, 'c', .3f}};
 
-    filesystem.write("test2.bin", vec);
+    fs::write("test2.bin", vec);
 
     vec.clear();
     ASSERT_EQ(vec.size(), 0);
 
-    filesystem.read("test2.bin", vec);
+    fs::read("test2.bin", vec);
 
     check_data_integrity(vec);
 }
 
 TEST(FILESYSTEM, WRITE_READ_WITH_OFFSET) {
-    fs::filesystem filesystem;
 
     std::vector<trivial_struct> vec
         = {{1, 'a', .1f}, {2, 'b', .2f}, {3, 'c', .3f}};
 
     size_t vec_size = sizeof(trivial_struct) * vec.size() + sizeof(size_t);
 
-    filesystem.write("test3.bin", vec, vec_size);
-    filesystem.write("test3.bin", vec, 0);
+    fs::write("test3.bin", vec, vec_size);
+    fs::write("test3.bin", vec, 0);
 
     auto vec1
-        = filesystem.read<std::vector<trivial_struct>>("test3.bin", 0);
+        = fs::read<std::vector<trivial_struct>>("test3.bin", 0);
     auto vec2
-        = filesystem.read<std::vector<trivial_struct>>("test3.bin", vec_size);
+        = fs::read<std::vector<trivial_struct>>("test3.bin", vec_size);
 
     check_data_integrity(vec1);
     check_data_integrity(vec2);
 }
 
 TEST(FILESYSTEM, ASYNC) {
-    fs::filesystem filesystem;
 
     std::vector<trivial_struct> vec
         = {{1, 'a', .1f}, {2, 'b', .2f}, {3, 'c', .3f}};
 
     size_t vec_size = sizeof(trivial_struct) * vec.size() + sizeof(size_t);
 
-    auto f0 = filesystem.write_async<std::vector<trivial_struct>>("test_async.bin",std::move(vec));
+    auto f0 = fs::write_async<std::vector<trivial_struct>>("test_async.bin",std::move(vec));
     f0.wait();
-    auto f1 = filesystem.read_async<std::vector<trivial_struct>>("test_async.bin");
+    auto f1 = fs::read_async<std::vector<trivial_struct>>("test_async.bin");
     auto vec1 = f1.get();
     check_data_integrity(vec1);
     //check_data_integrity(vec2);
+}
+
+TEST(FILESYSTEM, string) {
+
+    std::string str{"i'm a string yes very much"};
+
+    fs::write("atestfile.bin",str);
+    auto str_2 = fs::read<std::string>("atestfile.bdead");
+    
+    ASSERT_EQ(str,str_2);
 }
