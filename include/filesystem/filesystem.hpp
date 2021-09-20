@@ -29,10 +29,8 @@ namespace fs {
 
     }  // namespace internal
 
-
-
     template <typename T>
-    void read(const std::string& filepath, T& data, size_t offset = 0) {
+    inline void read(const std::string& filepath, T& data, size_t offset = 0) {
         std::ifstream ifs(filepath, std::ios_base::binary | std::ios_base::out
                                         | std::ios_base::in);
         if (ifs.is_open()) {
@@ -73,31 +71,31 @@ namespace fs {
 
     template <>
     std::string read<std::string>(const std::string& filepath, size_t offset) {
-        std::ifstream ifs(filepath, std::ios_base::binary | std::ios_base::ate
-                                        | std::ios_base::in);
-        ifs.seekg(0, std::ios::end);
-        size_t size = ifs.tellg();
+        std::filesystem::path f_path{filepath};
         std::string str;
-        str.resize(size, '\0');
-        ifs.read(str.data(), size);
-        ifs.close();
+
+        if (std::filesystem::exists(f_path)) {
+            std::ifstream ifs(filepath, std::ios_base::binary
+                            
+                                            | std::ios_base::in);
+            size_t size = std::filesystem::file_size(f_path);
+            str.resize(size, '\0');
+            ifs.read(&str[0], size);
+            ifs.close();
+        }
         return str;
     }
 
     template <>
-    void write<std::string>(const std::string& filepath, std::string& data, size_t offset) {
+    void write<std::string>(const std::string& filepath, std::string& data,
+                            size_t offset) {
         std::filesystem::path f_path{filepath};
-        std::ofstream ofs;
 
-        if (!std::filesystem::exists(f_path)) {
-            ofs.open(filepath.c_str(), std::ios_base::out);
-            ofs.close();
-        }
+        std::ofstream ofs(filepath.c_str(),
+                          std::fstream::out | std::fstream::binary);
 
-        ofs.open(filepath.c_str(),
-                 std::fstream::out | std::fstream::in | std::fstream::binary);
-
-        ofs.write(data.data(), data.size() * sizeof(char));
+        ofs.write(&data[0], data.length());
+        ofs.close();
     }
 
     template <typename T>

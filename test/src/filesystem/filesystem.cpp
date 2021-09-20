@@ -40,21 +40,6 @@ TEST(FILESYSTEM, WRITE_READ1) {
     check_data_integrity(vec);
 }
 
-TEST(FILESYSTEM, WRITE_READ2) {
-
-    std::vector<trivial_struct> vec
-        = {{1, 'a', .1f}, {2, 'b', .2f}, {3, 'c', .3f}};
-
-    fs::write("test2.bin", vec);
-
-    vec.clear();
-    ASSERT_EQ(vec.size(), 0);
-
-    fs::read("test2.bin", vec);
-
-    check_data_integrity(vec);
-}
-
 TEST(FILESYSTEM, WRITE_READ_WITH_OFFSET) {
 
     std::vector<trivial_struct> vec
@@ -89,12 +74,12 @@ TEST(FILESYSTEM, ASYNC) {
     //check_data_integrity(vec2);
 }
 
-TEST(FILESYSTEM, string) {
+TEST(FILESYSTEM, STRING) {
 
     std::string str{"i'm a string yes very much"};
 
     fs::write("atestfile.bin",str);
-    auto str_2 = fs::read<std::string>("atestfile.bdead");
+    std::string str_2 = fs::read<std::string>("atestfile.bin");
     
     ASSERT_EQ(str,str_2);
 }
