@@ -21,13 +21,12 @@ struct trivial_struct {
 	float c;
 }
 
-fs::filesystem filesystem;
 
 std::vector<trivial_struct> vec1 = {{1, 'a', .1f}, {2, 'b', .2f}, {3, 'c', .3f}};
 
-filesystem.write("test2.bin", vec2);
+fs::write("test2.bin", vec2);
 
-auto future = filesystem.read_async("test2.bin");
+auto future = fs::read_async("test2.bin");
 
 auto vec2 = future.get(); // vec1 is the same as vec2 
 
