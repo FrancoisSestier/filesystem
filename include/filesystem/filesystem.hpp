@@ -22,7 +22,7 @@ namespace fs {
     }
 
     template <typename T>
-    T read(const std::string& filepath, size_t offset = 0) {
+    inline T read(const std::string& filepath, size_t offset = 0) {
         std::ifstream ifs(filepath, std::ios_base::binary | std::ios_base::out
                                         | std::ios_base::in);
         T data;
@@ -35,7 +35,7 @@ namespace fs {
     }
 
     template <typename T>
-    void write(const std::string& filepath, T& data, size_t offset = 0) {
+    inline void write(const std::string& filepath, T& data, size_t offset = 0) {
         if (!std::filesystem::exists(filepath)) {
             std::ofstream ofs(filepath, std::ios_base::out);
             ofs.close();
@@ -51,7 +51,7 @@ namespace fs {
     }
 
     template <>
-    std::string read<std::string>(const std::string& filepath, size_t offset) {
+    inline std::string read<std::string>(const std::string& filepath, size_t offset) {
         std::filesystem::path f_path{filepath};
         std::string str;
 
@@ -68,7 +68,7 @@ namespace fs {
     }
 
     template <>
-    void write<std::string>(const std::string& filepath, std::string& data,
+    inline void write<std::string>(const std::string& filepath, std::string& data,
                             size_t offset) {
         std::filesystem::path f_path{filepath};
 
@@ -99,13 +99,13 @@ namespace fs {
     }  // namespace internal
 
     template <typename T>
-    auto read_async(const std::string& filepath, size_t offset = 0) {
+    inline auto read_async(const std::string& filepath, size_t offset = 0) {
         return std::async(std::launch::async, &internal::read_<T>, filepath,
                           offset);
     }
 
     template <typename T>
-    auto write_async(const std::string& filepath, T&& data, size_t offset = 0) {
+    inline auto write_async(const std::string& filepath, T&& data, size_t offset = 0) {
         return std::async(std::launch::async, &internal::write_<T>, filepath,
                           std::move(data), offset);
     }
